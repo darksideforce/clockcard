@@ -1,0 +1,49 @@
+{
+  "package": "com.honorclockcard",
+  "name": "clockcard",
+  "versionName": "1.0.0",
+  "versionCode": 1,
+  "minPlatformVersion": 1070,
+  "icon": "/assets/images/logo.png",
+  "features": [
+    {
+      "name": "system.prompt"
+    },
+    {
+      "name": "system.router"
+    },
+    {
+      "name": "system.shortcut"
+    },
+    {
+      "name": "system.fetch"
+    }
+  ],
+  "permissions": [
+    {
+      "origin": "*"
+    }
+  ],
+  "template/official": "demo-template",
+  "config": {
+    "logLevel": "debug",
+    "designWidth": 1080
+  },
+  "router": {
+    "entry": "smallclock",
+    "widgets": {
+      "smallclock": {
+        "name": "smallclock",
+        "description": "2*2尺寸时钟",
+        "component": "index",
+        "path": "/smallclock",
+        "minPlatformVersion": 6035,
+        "targetManufactorys": [
+        ],
+        "features": [
+          { "name": "system.device" }
+        ]
+      }
+    }
+  }
+}
