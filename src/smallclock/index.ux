@@ -1,6 +1,7 @@
 <template>
   <div class="card-wrapper">
     <stack class="stack">
+      <div class="loop"></div>
       <canvas id="canvas-id"></canvas>
       <text class="time">{{ currentTime }}</text>
     </stack>
@@ -21,7 +22,7 @@ export default {
     circleY: '',
     circleR: '',
     circleAngle: Math.PI * 180,
-    time: 1800,
+    time: 180,
     percentageBy100: 0,
   },
   computed: {
@@ -78,13 +79,18 @@ export default {
   },
   async draw(ctx) {
     try {
+      // ctx.context.shadowOffsetX = 1
+
       ctx.beginPath()
       this.circleX = this.windowWidth / 2 / this.ratio
       this.circleY = this.windowHeight / 2 / this.ratio
       ctx.arc(this.windowWidth / 2 / this.ratio, this.windowHeight / 2 / this.ratio, 50, 0, 2 * Math.PI, false)
       ctx.lineWidth = 11 * this.ratio
-      ctx.strokeStyle = '#e3e3e3'
+      ctx.strokeStyle = '#5c6b1b'
+      console.log(ctx.context)
       ctx.stroke()
+      ctx.save()
+
     }
     catch (e) {
       console.log(e)
@@ -97,22 +103,19 @@ export default {
         if (self.percentage <= 100) {
           const startAngle = 3 / 2 * Math.PI
           const percentage = self.percentage
-          self.percentage = percentage + 0.055555
+          self.percentage = percentage + 0.55555
           this.time = this.time = 0 ? 0 : this.time - 1
           if (this.percentage > this.percentageBy100) {
             const remainder = Math.floor(this.percentage / 1)
-            console.log(`remainder=${remainder}`)
             if (remainder > this.percentageBy100) {
-              
               this.percentageBy100 += 1
-              console.log(`绘制${this.percentageBy100}`)
               const diffAngle = percentage / 100 * Math.PI * 2
               this.circleAngle = diffAngle
               ctx.beginPath()
-              ctx.lineWidth = 10 * this.ratio
+              ctx.lineWidth = 8 * this.ratio
               ctx.arc(this.windowWidth / 2 / this.ratio, this.windowHeight / 2 / this.ratio, 50, startAngle, diffAngle + startAngle, false)
               ctx.lineCap = "round"
-              ctx.strokeStyle = 'green'
+              ctx.strokeStyle = '#cce451'
               ctx.stroke()
               // ctx.beginPath()
               // console.log(ctx)
@@ -139,16 +142,27 @@ export default {
   height: 100%;
   justify-content: center;
   align-items: center;
-  background-color: #ffffff;
+  background-color: #cce55e;
   padding: 0;
 }
 #canvas-id {
   width: 152dp;
   height: 152dp;
 }
+.loop{
+  width: 110dp;
+  height: 110dp;
+  border-radius: 50%;
+  background-color:#5c6b1b
+}
 .stack {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.time{
+  font-size: 22dp;
+  font-weight: bold;
+  color: white;
 }
 </style>
