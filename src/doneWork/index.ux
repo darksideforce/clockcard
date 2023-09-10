@@ -1,0 +1,22 @@
+<template>
+  <div>
+    <div class="done-wrapper">
+      <div class="title-left">
+        <image src="../assets/images/tomatos.png" class="left-logo"></image>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data: {
+
+  },
+
+}
+</script>
+
+<style>
+
+</style>
