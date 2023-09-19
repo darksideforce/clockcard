@@ -1,0 +1,123 @@
+<template>
+  <div class="calendar-wrapper">
+    <div class="left-wrapper">
+      <text>本</text>
+      <text>月</text>
+    </div>
+    <div class="right-wrapper">
+      <div class="top-calendar-wrapper">
+        <!-- <div class="column"></div> -->
+        <div class="column"><text>周二</text></div>
+        <!-- <div class="column"></div> -->
+        <div class="column"><text>周四</text></div>
+        <!-- <div class="column"></div> -->
+        <div class="column"><text>周六</text></div>
+        <!-- <div class="column"></div> -->
+      </div>
+      <div class="bottom-wrapper">
+        <div class="row-box" for="item in dateArray">
+          <div class="column" for="itemSon in item">
+            <div class="time-box" style="{{computedStyle(itemSon.deep)}}"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { dateArray } from './date.js'
+export default {
+    data: {
+        dateArray: [
+            [{ day: '1', deep: '2' }, { day: '1', deep: '' }, { day: '1', deep: '' }, { day: '1', deep: '' }, { day: '1', deep: '' }, { day: '1', deep: '' }, { day: '1', deep: '' }],
+            [{ day: '1', deep: '1' }, { day: '1', deep: '' }, { day: '1', deep: '' }, { day: '1', deep: '1' }, { day: '1', deep: '' }, { day: '1', deep: '' }, { day: '1', deep: '' }],
+            [{ day: '1', deep: '3' }, { day: '1', deep: '1' }, { day: '1', deep: '' }, { day: '1', deep: '' }, { day: '1', deep: '' }, { day: '1', deep: '' }, { day: '1', deep: '' }],
+            [{ day: '1', deep: '4' }, { day: '1', deep: '' }, { day: '1', deep: '1' }, { day: '1', deep: '' }, { day: '1', deep: '1' }, { day: '1', deep: '' }, { day: '1', deep: '' }],
+            [{ day: '1', deep: '1' }, { day: '1', deep: '' }, { day: '1', deep: '' }, { day: '1', deep: '' }, { day: '1', deep: '' }, { day: '1', deep: '' }, { day: '1', deep: '' }],
+        ]
+    },
+    computedStyle(deep) {
+        let styles = {}
+        switch(deep){
+             case '1':
+                //  console.log(`123`)
+                 styles.backgroundColor = '#c6e48b';
+                 break;
+            case '2':
+                styles.backgroundColor = '#7bC96f';
+                break;
+            case '3':
+                styles.backgroundColor = '#239a3b';
+                break;
+            case '4':
+                styles.backgroundColor = '#196127';
+                break;
+
+        }   
+        console.log(styles.backgroundColor)
+        return styles
+    },
+
+
+}
+</script>
+
+<style lang="less">
+.calendar-wrapper {
+  width: 100%;
+  height: 100%;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: 0dp;
+  .left-wrapper {
+    flex-direction: column;
+    align-items: center;
+    margin-right: 6dp;
+    padding-top: 20dp;
+    text {
+      margin-bottom: 4dp;
+    }
+  }
+  .right-wrapper {
+    height: 100%;
+    flex: 1;
+    flex-direction: column;
+  }
+  .top-calendar-wrapper {
+    width: 100%;
+    height: 20dp;
+    margin-bottom: 6dp;
+    .column {
+      height: 20dp;
+      flex: 1;
+      /* border: 1px solid #000000; */
+      text-align: center;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+}
+.bottom-wrapper {
+  flex: 1;
+  flex-direction: column;
+  .row-box {
+    width: 100%;
+    flex: 1;
+    .column {
+      flex: 1;
+      /* border: 1px solid #000000; */
+      justify-content: center;
+      align-items: center;
+      .time-box {
+        width: 14dp;
+        height: 14dp;
+        /* border: 1px solid rgba(0, 0, 0, 0.5); */
+        border-radius: 4dp;
+        background-color: #ebedf0;
+      }
+    }
+  }
+}
+</style>
