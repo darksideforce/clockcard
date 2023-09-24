@@ -7,14 +7,19 @@
     <stack class="outter-wrapper">
       <title class="title"></title>
       <div class="started" if="{{showDistribute('READY')}}">
-        <div class="blank"></div>
+        <div class="blank" onclick="ToProcess('TIMEING')">
+          <text>开始计时吧</text>
+        </div>
         <div class="calendar-area">
-          <calendar ></calendar>
+          <calendar 
+            current-day="{{currentDay}}"
+            calendar-array="{{calendarArray}}"
+          ></calendar>
         </div>
       </div>
       <!--显示计时容器区域-->
       <div class="clock-wrapper" if="{{showDistribute('TIMEING')}}">
-        <stack class="stack">
+        <stack class="stack" onclick="handleClickToStarted">
           <div class="loop"></div>
           <canvas id="canvas-id"></canvas>
           <text class="time">{{ currentTime }}</text>
@@ -29,6 +34,9 @@
 
 <script>
 import utils from '../helper/utils.js'
+import initCalendar from '../utils/utils.js'
+import {getDayMonthYear} from '../utils/index.js'
+import { calendarStorage, calendarGet } from '../utils/storage.js'
 const CARD_STATUS = {
   READY: 1,
   UNREADY: 0,
@@ -50,6 +58,8 @@ export default {
     time: 180,
     percentageBy100: 0,
     showStatus: 1,
+    currentDay:'',
+    calendarArray: []
   },
   computed: {
     currentTime() {
@@ -63,11 +73,50 @@ export default {
     },
 
   },
+  onInit() {
+    this.timeArrayOninit()
+  },
   async onShow() {
+    try {
+      this.currentDay = getDayMonthYear(new Date())
+    }
+    catch (e) {
+      console.log(e)
+    }
+  },
+  //数组开始初次渲染。判断本地有无缓存对象。如果没有则新创建对象。如果有则判断和当前是否同一个月
+  //设置缓存。
+  async timeArrayOninit() {
+    try {
+      const self = this
+      const { data, success, error } = await calendarGet()
+      //本地有缓存
+      if (success && data) {
+        console.log(`走了本地有缓存`)
+        //判断是不是同月
+        const storageObject = JSON.parse(data)
+        //不进行数组合并,因为不同月
+        if (storageObject && storageObject.month !== new date().getMonth() + 1) {
+
+        }
+        //进行数组合并
+        else {
+
+        }
+      }
+      //本地没有缓存
+      else {
+        console.log(`走了本地没缓存`)
+        this.calendarArray = new initCalendar().array
+        console.log(this.calendarArray)
+      }
+    }
+    catch (e) {
+      console.log(e)
+    }
   },
   //点击开始计时
   async handleClickToStarted() {
-    this.showStatus = CARD_STATUS.TIMEING
     setTimeout(async () => {
       await this.getWidth(this.$element('canvas-id'))
       const canvas = this.$element('canvas-id')
@@ -107,7 +156,6 @@ export default {
   async draw(ctx) {
     try {
       // ctx.context.shadowOffsetX = 1
-
       ctx.beginPath()
       this.circleX = this.windowWidth / 2 / this.ratio
       this.circleY = this.windowHeight / 2 / this.ratio
@@ -117,7 +165,6 @@ export default {
       console.log(ctx.context)
       ctx.stroke()
       ctx.save()
-
     }
     catch (e) {
       console.log(e)
@@ -127,6 +174,7 @@ export default {
     try {
       const self = this
       this.timeout = setInterval(() => {
+        console.log(`执行绘画`)
         if (self.percentage <= 100) {
           const startAngle = 3 / 2 * Math.PI
           const percentage = self.percentage
@@ -153,6 +201,7 @@ export default {
         }
         else {
           clearInterval(this.timeout)
+          this.timeout = null
         }
       }, 1000)
     }
@@ -162,6 +211,10 @@ export default {
   },
   showDistribute(status) {
     return CARD_STATUS[status] === this.showStatus
+  },
+  //进行步骤
+  ToProcess(process){
+    this.showStatus = CARD_STATUS[process]
   }
 }
 </script>
@@ -199,18 +252,22 @@ export default {
   width: 100%;
   height: 100%;
   flex: 1;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  padding-top: 30dp;
+  padding-top: 20dp;
   padding-bottom: 8dp;
   padding-left: 8dp;
   padding-right: 8dp;
-  .blank{
+  .blank {
     /* width: 80dp; */
+    text{
+      font-size: 16dp;
+    }
   }
-  .calendar-area{
-    height: 100%;
-    width: 140dp;
+  .calendar-area {
+    height: 80%;
+    width: 160dp;
+    margin-right: 10dp;
   }
 }
 .button-wrap {
@@ -236,11 +293,11 @@ export default {
   justify-content: center;
   align-items: center;
 }
-.title{
+.title {
   height: 30dp;
   width: 100%;
 }
-.outter-wrapper{
+.outter-wrapper {
   width: 100%;
   height: 100%;
   flex: 1;

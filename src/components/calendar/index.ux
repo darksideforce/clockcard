@@ -7,17 +7,15 @@
     <div class="right-wrapper">
       <div class="top-calendar-wrapper">
         <!-- <div class="column"></div> -->
-        <div class="column"><text>周二</text></div>
+        <div class="column left"><text>周日</text></div>
         <!-- <div class="column"></div> -->
-        <div class="column"><text>周四</text></div>
-        <!-- <div class="column"></div> -->
-        <div class="column"><text>周六</text></div>
-        <!-- <div class="column"></div> -->
+        <div class="column center"><text>周三</text></div>
+        <div class="column right"><text>周六</text></div>
       </div>
       <div class="bottom-wrapper">
-        <div class="row-box" for="item in dateArray">
+        <div class="row-box" for="item in calendarArray">
           <div class="column" for="itemSon in item">
-            <div class="time-box" style="{{computedStyle(itemSon.deep)}}"></div>
+            <div class="time-box" style="{{computedStyle(itemSon.count,itemSon.dayStr)}}"></div>
           </div>
         </div>
       </div>
@@ -28,36 +26,45 @@
 <script>
 import { dateArray } from './date.js'
 export default {
-    data: {
-        dateArray: [
-            [{ day: '1', deep: '2' }, { day: '1', deep: '' }, { day: '1', deep: '' }, { day: '1', deep: '' }, { day: '1', deep: '' }, { day: '1', deep: '' }, { day: '1', deep: '' }],
-            [{ day: '1', deep: '1' }, { day: '1', deep: '' }, { day: '1', deep: '' }, { day: '1', deep: '1' }, { day: '1', deep: '' }, { day: '1', deep: '' }, { day: '1', deep: '' }],
-            [{ day: '1', deep: '3' }, { day: '1', deep: '1' }, { day: '1', deep: '' }, { day: '1', deep: '' }, { day: '1', deep: '' }, { day: '1', deep: '' }, { day: '1', deep: '' }],
-            [{ day: '1', deep: '4' }, { day: '1', deep: '' }, { day: '1', deep: '1' }, { day: '1', deep: '' }, { day: '1', deep: '1' }, { day: '1', deep: '' }, { day: '1', deep: '' }],
-            [{ day: '1', deep: '1' }, { day: '1', deep: '' }, { day: '1', deep: '' }, { day: '1', deep: '' }, { day: '1', deep: '' }, { day: '1', deep: '' }, { day: '1', deep: '' }],
-        ]
+  props:{
+    currentDay:{
+      default:''
     },
-    computedStyle(deep) {
-        let styles = {}
-        switch(deep){
-             case '1':
-                //  console.log(`123`)
-                 styles.backgroundColor = '#c6e48b';
-                 break;
-            case '2':
-                styles.backgroundColor = '#7bC96f';
-                break;
-            case '3':
-                styles.backgroundColor = '#239a3b';
-                break;
-            case '4':
-                styles.backgroundColor = '#196127';
-                break;
+    calendarArray:{
+      default:[
+      [{ dayStr: '', count: '2' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }],
+      [{ dayStr: '', count: '1' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '1' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }],
+      [{ dayStr: '', count: '3' }, { dayStr: '', count: '1' }, { dayStr:'', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }],
+      [{ dayStr: '', count: '4' }, { dayStr: '', count: '' }, { dayStr: '', count: '1' }, { dayStr: '', count: '' }, { dayStr: '', count: '1' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }],
+      [{ dayStr: '', count: '1' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }],
+    ]
+    }
+  },
+  data: {
+  },
+  computedStyle(count,day) {
+    let styles = {}
+    switch (count) {
+      case '1':
+        //  console.log(`123`)
+        styles.backgroundColor = '#44a340';
+        break;
+      case '2':
+        styles.backgroundColor = '#7bC96f';
+        break;
+      case '3':
+        styles.backgroundColor = '#239a3b';
+        break;
+      case '4':
+        styles.backgroundColor = '#196127';
+        break;
 
-        }   
-        console.log(styles.backgroundColor)
-        return styles
-    },
+    }
+    if(day === this.currentDay){
+      styles.border = '1px solid #000000'
+    }
+    return styles
+  },
 
 
 }
@@ -78,6 +85,7 @@ export default {
     padding-top: 20dp;
     text {
       margin-bottom: 4dp;
+      font-size: 15dp;
     }
   }
   .right-wrapper {
@@ -89,13 +97,25 @@ export default {
     width: 100%;
     height: 20dp;
     margin-bottom: 6dp;
+    .right {
+      justify-content: flex-end;
+    }
+    .left {
+      justify-content: flex-start;
+    }
+    .center {
+      justify-content: center;
+    }
     .column {
       height: 20dp;
       flex: 1;
       /* border: 1px solid #000000; */
-      text-align: center;
-      justify-content: center;
+      text-align: left;
+
       align-items: center;
+      text {
+        font-size: 10px;
+      }
     }
   }
 }
