@@ -35,7 +35,7 @@
 <script>
 import utils from '../helper/utils.js'
 import initCalendar from '../utils/utils.js'
-import {getDayMonthYear} from '../utils/index.js'
+import {getDayMonthYear,addCount} from '../utils/index.js'
 import { calendarStorage, calendarGet } from '../utils/storage.js'
 const CARD_STATUS = {
   READY: 1,
@@ -118,6 +118,7 @@ export default {
   //点击开始计时
   async handleClickToStarted() {
     setTimeout(async () => {
+      self.percentage = 100
       await this.getWidth(this.$element('canvas-id'))
       const canvas = this.$element('canvas-id')
       this.ctx = await this.adaptCanvas(canvas.getContext('2d'))
@@ -200,8 +201,12 @@ export default {
 
         }
         else {
+          //执行次数+1
           clearInterval(this.timeout)
           this.timeout = null
+          this.currentDay = getDayMonthYear(new Date())
+         this.calendarArray = addCount(this.calendarArray,this.currentDay)
+         this.showStatus = CARD_STATUS['READY']
         }
       }, 1000)
     }

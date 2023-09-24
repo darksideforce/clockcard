@@ -1,4 +1,4 @@
-import {getDayMonthYear,getFirstDayOfMonth} from './index'
+import {getDayMonthYear,getFirstDayOfMonth,chunkArr} from './index'
 class calendar {
     constructor(date) {
 
@@ -66,6 +66,7 @@ class calendar {
             dayobject.day = d;
             dayobject.dayStr = getDayMonthYear(d);
             dayobject.dayStrNL = this.formatDateNL(d)
+            dayobject.count = 0
             dayobject.matters = [];
             this.days.push(dayobject);
         }
@@ -143,17 +144,7 @@ class calendar {
 }
 
 //拆分数组
-function chunkArr(arr, size) {
-    //判断如果不是数组(就没有length)，或者size没有传值，size小于1，就返回空数组
-    if (!arr.length || !size || size < 1) return []
-    let [start, end, result] = [null, null, []]
-    for (let i = 0; i < Math.ceil(arr.length / size); i++) {
-        start = i * size
-        end = start + size
-        result.push(arr.slice(start, end))
-    }
-    return result
-}
+
 //存储已经设置好的数组
 class initCalendar {
     constructor(oldDay) {
