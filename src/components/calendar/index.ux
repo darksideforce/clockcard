@@ -43,19 +43,21 @@ export default {
   data: {
   },
   computedStyle(count,day) {
+    console.log(`count=${count}`)
     let styles = {}
     switch (count) {
-      case '1':
+      case 1:
         //  console.log(`123`)
         styles.backgroundColor = '#44a340';
         break;
-      case '2':
+      case 2:
+        console.log(`123`)
         styles.backgroundColor = '#7bC96f';
         break;
-      case '3':
+      case 3:
         styles.backgroundColor = '#239a3b';
         break;
-      case '4':
+      case 4:
         styles.backgroundColor = '#196127';
         break;
 

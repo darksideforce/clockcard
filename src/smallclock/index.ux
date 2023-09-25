@@ -11,7 +11,7 @@
           <text>开始计时吧</text>
         </div>
         <div class="calendar-area">
-          <calendar 
+          <calendar
             current-day="{{currentDay}}"
             calendar-array="{{calendarArray}}"
           ></calendar>
@@ -24,6 +24,10 @@
           <canvas id="canvas-id"></canvas>
           <text class="time">{{ currentTime }}</text>
         </stack>
+        <div class="abandon" onclick="handleclickStop">
+          <image src="../assets/images/right.png" class="right-logo" />
+          <!-- <text @click="handleclickStop">放弃</text> -->
+        </div>
       </div>
       <!-- <finish class="finish-wrapper" if="{{showDistribute('FINISH')}}"> </finish> -->
     </stack>
@@ -35,7 +39,7 @@
 <script>
 import utils from '../helper/utils.js'
 import initCalendar from '../utils/utils.js'
-import {getDayMonthYear,addCount} from '../utils/index.js'
+import { getDayMonthYear, addCount } from '../utils/index.js'
 import { calendarStorage, calendarGet } from '../utils/storage.js'
 const CARD_STATUS = {
   READY: 1,
@@ -58,7 +62,8 @@ export default {
     time: 180,
     percentageBy100: 0,
     showStatus: 1,
-    currentDay:'',
+    currentDay: '',
+    clickable: false,
     calendarArray: []
   },
   computed: {
@@ -71,7 +76,6 @@ export default {
       sec = (sec.length === 1) ? '0' + sec : sec
       return min + ':' + sec
     },
-
   },
   onInit() {
     this.timeArrayOninit()
@@ -94,15 +98,8 @@ export default {
       if (success && data) {
         console.log(`走了本地有缓存`)
         //判断是不是同月
-        const storageObject = JSON.parse(data)
-        //不进行数组合并,因为不同月
-        if (storageObject && storageObject.month !== new date().getMonth() + 1) {
-
-        }
-        //进行数组合并
-        else {
-
-        }
+        this.calendarArray = JSON.parse(data)
+        console.log(this.calendarArray)
       }
       //本地没有缓存
       else {
@@ -163,7 +160,6 @@ export default {
       ctx.arc(this.windowWidth / 2 / this.ratio, this.windowHeight / 2 / this.ratio, 50, 0, 2 * Math.PI, false)
       ctx.lineWidth = 11 * this.ratio
       ctx.strokeStyle = '#5c6b1b'
-      console.log(ctx.context)
       ctx.stroke()
       ctx.save()
     }
@@ -173,52 +169,73 @@ export default {
   },
   startTime(ctx) {
     try {
-      const self = this
-      this.timeout = setInterval(() => {
-        console.log(`执行绘画`)
-        if (self.percentage <= 100) {
-          const startAngle = 3 / 2 * Math.PI
-          const percentage = self.percentage
-          self.percentage = percentage + 0.55555
-          this.time = this.time = 0 ? 0 : this.time - 1
-          if (this.percentage > this.percentageBy100) {
-            const remainder = Math.floor(this.percentage / 1)
-            if (remainder > this.percentageBy100) {
-              this.percentageBy100 += 1
-              const diffAngle = percentage / 100 * Math.PI * 2
-              this.circleAngle = diffAngle
-              ctx.beginPath()
-              ctx.lineWidth = 8 * this.ratio
-              ctx.arc(this.windowWidth / 2 / this.ratio, this.windowHeight / 2 / this.ratio, 50, startAngle, diffAngle + startAngle, false)
-              ctx.lineCap = "round"
-              ctx.strokeStyle = '#cce451'
-              ctx.stroke()
-              // ctx.beginPath()
-              // console.log(ctx)
+      if (!this.clickable) {
+        this.clickable = true
+        const self = this
+        this.timeout = setInterval(async () => {
+          console.log(`执行绘画`)
+          if (self.percentage <= 100) {
+            const startAngle = 3 / 2 * Math.PI
+            const percentage = self.percentage
+            self.percentage = percentage + 0.55555
+            this.time = this.time = 0 ? 0 : this.time - 1
+            if (this.percentage > this.percentageBy100) {
+              const remainder = Math.floor(this.percentage / 1)
+              if (remainder > this.percentageBy100) {
+                this.percentageBy100 += 1
+                const diffAngle = percentage / 100 * Math.PI * 2
+                this.circleAngle = diffAngle
+                ctx.beginPath()
+                ctx.lineWidth = 8 * this.ratio
+                ctx.arc(this.windowWidth / 2 / this.ratio, this.windowHeight / 2 / this.ratio, 50, startAngle, diffAngle + startAngle, false)
+                ctx.lineCap = "round"
+                ctx.strokeStyle = '#cce451'
+                ctx.stroke()
+                // ctx.beginPath()
+                // console.log(ctx)
+              }
+              else { }
             }
-            else { }
-          }
 
-        }
-        else {
-          //执行次数+1
-          clearInterval(this.timeout)
-          this.timeout = null
-          this.currentDay = getDayMonthYear(new Date())
-         this.calendarArray = addCount(this.calendarArray,this.currentDay)
-         this.showStatus = CARD_STATUS['READY']
-        }
-      }, 1000)
+          }
+          else {
+            //执行次数+1
+            clearInterval(this.timeout)
+            this.timeout = null
+            this.currentDay = getDayMonthYear(new Date())
+            this.calendarArray = addCount(this.calendarArray, this.currentDay)
+            self.percentage = 0
+            self.time = 180
+            self.circleAngle = Math.PI * 180
+            await calendarStorage(this.calendarArray)
+            this.showStatus = CARD_STATUS['READY']
+          }
+        }, 1000)
+      }
+      else {
+
+      }
     }
     catch (e) {
       console.log(e)
     }
   },
+
+  handleclickStop() {
+    this.clickable = false
+    self.percentage = 0
+    self.time = 180
+    self.circleAngle = Math.PI * 180
+    if (this.ctx) {
+      this.ctx.clearRect(0, 0, 50, 50)
+    }
+    clearInterval(this.timeout)
+  },
   showDistribute(status) {
     return CARD_STATUS[status] === this.showStatus
   },
   //进行步骤
-  ToProcess(process){
+  ToProcess(process) {
     this.showStatus = CARD_STATUS[process]
   }
 }
@@ -265,7 +282,7 @@ export default {
   padding-right: 8dp;
   .blank {
     /* width: 80dp; */
-    text{
+    text {
       font-size: 16dp;
     }
   }
@@ -297,6 +314,23 @@ export default {
   flex: 1;
   justify-content: center;
   align-items: center;
+  .abandon {
+    border-radius: 10dp;
+    background-color: #f6cb9c;
+    padding: 6dp 10dp;
+    margin-left: 40dp;
+    justify-content: center;
+    align-items: center;
+    text {
+      font-size: 25dp;
+      font-weight: bold;
+      color: #cf461d;
+    }
+    .right-logo {
+      width: 40dp;
+      height: 40dp;
+    }
+  }
 }
 .title {
   height: 30dp;
