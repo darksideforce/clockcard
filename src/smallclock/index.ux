@@ -5,10 +5,13 @@
 <template>
   <div class="card-wrapper">
     <stack class="outter-wrapper">
-      <title class="title"></title>
+      <!-- <title class="title"></title> -->
       <div class="started" if="{{showDistribute('READY')}}">
         <div class="blank" onclick="ToProcess('TIMEING')">
-          <text>开始计时吧</text>
+          <stack>
+            <image src="../assets/images/tomatos.png"></image>
+            <text>开始计时吧</text>
+          </stack>
         </div>
         <div class="calendar-area">
           <calendar
@@ -207,7 +210,14 @@ export default {
             self.percentage = 0
             self.time = 180
             self.circleAngle = Math.PI * 180
-            await calendarStorage(this.calendarArray)
+            self.percentageBy100 = 0
+            if (this.ctx) {
+              this.ctx.clearRect(0, 0, 50, 50)
+            }
+            await calendarStorage(JSON.stringify({
+              date:'',
+              array:this.calendarArray
+            }))
             this.showStatus = CARD_STATUS['READY']
           }
         }, 1000)
@@ -223,9 +233,10 @@ export default {
 
   handleclickStop() {
     this.clickable = false
-    self.percentage = 0
-    self.time = 180
-    self.circleAngle = Math.PI * 180
+    this.percentageBy100 = 0
+    this.percentage = 0
+    this.time = 180
+    this.circleAngle = Math.PI * 180
     if (this.ctx) {
       this.ctx.clearRect(0, 0, 50, 50)
     }
@@ -247,7 +258,7 @@ export default {
   height: 100%;
   justify-content: center;
   align-items: center;
-  background-color: #fdf8e8;
+  background-color: #FF9A2E;
   padding: 0;
 }
 #canvas-id {
@@ -282,8 +293,21 @@ export default {
   padding-right: 8dp;
   .blank {
     /* width: 80dp; */
+    height: 100%;
+    flex: 1;
+    stack{
+      width: 100%;
+      height: 100%;
+      justify-content: center;
+      align-items: center;
+    }
+    image{
+      width: 80dp;
+      height: 80dp;
+    }
     text {
       font-size: 16dp;
+      color: #fff
     }
   }
   .calendar-area {

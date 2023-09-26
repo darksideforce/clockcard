@@ -15,7 +15,10 @@
       <div class="bottom-wrapper">
         <div class="row-box" for="item in calendarArray">
           <div class="column" for="itemSon in item">
-            <div class="time-box" style="{{computedStyle(itemSon.count,itemSon.dayStr)}}"></div>
+            <div
+              class="time-box"
+              style="{{computedStyle(itemSon.count,itemSon.dayStr)}}"
+            ></div>
           </div>
         </div>
       </div>
@@ -26,43 +29,47 @@
 <script>
 import { dateArray } from './date.js'
 export default {
-  props:{
-    currentDay:{
-      default:''
+  props: {
+    currentDay: {
+      default: ''
     },
-    calendarArray:{
-      default:[
-      [{ dayStr: '', count: '2' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }],
-      [{ dayStr: '', count: '1' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '1' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }],
-      [{ dayStr: '', count: '3' }, { dayStr: '', count: '1' }, { dayStr:'', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }],
-      [{ dayStr: '', count: '4' }, { dayStr: '', count: '' }, { dayStr: '', count: '1' }, { dayStr: '', count: '' }, { dayStr: '', count: '1' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }],
-      [{ dayStr: '', count: '1' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }],
-    ]
+    calendarArray: {
+      default: [
+        [{ dayStr: '', count: '2' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }],
+        [{ dayStr: '', count: '1' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '1' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }],
+        [{ dayStr: '', count: '3' }, { dayStr: '', count: '1' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }],
+        [{ dayStr: '', count: '4' }, { dayStr: '', count: '' }, { dayStr: '', count: '1' }, { dayStr: '', count: '' }, { dayStr: '', count: '1' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }],
+        [{ dayStr: '', count: '1' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }, { dayStr: '', count: '' }],
+      ]
     }
   },
   data: {
   },
-  computedStyle(count,day) {
+  computedStyle(count, day) {
     console.log(`count=${count}`)
     let styles = {}
-    switch (count) {
-      case 1:
-        //  console.log(`123`)
-        styles.backgroundColor = '#44a340';
-        break;
-      case 2:
-        console.log(`123`)
-        styles.backgroundColor = '#7bC96f';
-        break;
-      case 3:
-        styles.backgroundColor = '#239a3b';
-        break;
-      case 4:
-        styles.backgroundColor = '#196127';
-        break;
-
+    if (count > 5) {
+      styles.backgroundColor = '#004D1C'
     }
-    if(day === this.currentDay){
+    else if (count < 5) {
+      switch (count) {
+        case 1:
+          //  console.log(`123`)
+          styles.backgroundColor = '#AFF0B5';
+          break;
+        case 2:
+          styles.backgroundColor = '#4CD263';
+          break;
+        case 3:
+          styles.backgroundColor = '#23C343';
+          break;
+        case 4:
+          styles.backgroundColor = '#009A29';
+          break;
+
+      }
+    }
+    if (day === this.currentDay) {
       styles.border = '1px solid #000000'
     }
     return styles
