@@ -40,7 +40,8 @@
         "targetManufactorys": [
         ],
         "features": [
-          { "name": "system.device" }
+          { "name": "system.device" },
+          { "name": "system.storage" }
         ]
       }
     }

@@ -5,14 +5,7 @@
 <template>
   <div class="card-wrapper">
     <stack class="outter-wrapper">
-      <!-- <title class="title"></title> -->
       <div class="started" if="{{showDistribute('READY')}}">
-        <div class="blank" onclick="ToProcess('TIMEING')">
-          <stack>
-            <image src="../assets/images/tomatos.png"></image>
-            <text>开始计时吧</text>
-          </stack>
-        </div>
         <div class="calendar-area">
           <calendar
             current-day="{{currentDay}}"
@@ -21,18 +14,42 @@
         </div>
       </div>
       <!--显示计时容器区域-->
-      <div class="clock-wrapper" if="{{showDistribute('TIMEING')}}">
-        <stack class="stack" onclick="handleClickToStarted">
-          <div class="loop"></div>
-          <canvas id="canvas-id"></canvas>
-          <text class="time">{{ currentTime }}</text>
-        </stack>
-        <div class="abandon" onclick="handleclickStop">
-          <image src="../assets/images/right.png" class="right-logo" />
-          <!-- <text @click="handleclickStop">放弃</text> -->
+      <stack
+        class="stack-wrapper"
+        if="{{showDistribute('TIMEING')}}"
+        overflow="hidden"
+      >
+        <lottie
+          class="lottie"
+          source="https://lottie.host/e51ab334-555d-4580-af9b-734336f4a8a2/105hIiVzvI.json"
+          id="lottie1"
+          autoplay="{{true}}"
+          loop="{{true}}"
+          if="!showDone"
+        ></lottie>
+        <div class="clock-wrapper">
+          <stack class="stack" onclick="handleClickToStarted">
+            <div class="loop"></div>
+            <canvas id="canvas-id"></canvas>
+            <text class="time" if="!showDone">{{ currentTime }}</text>
+          </stack>
+          <!-- <div class="abandon" onclick="handleclickStop">
+            <image src="../assets/images/right.png" class="right-logo" />
+          </div> -->
         </div>
+        <div class="done" if="showDone" @click="showDoneClick">
+          <lottie
+            class="lottie"
+            source="https://lottie.host/4998dab0-ca0f-45eb-97ee-6e910d177faa/Fd6YAGGglB.json"
+            id="lottie1"
+            autoplay="{{true}}"
+            loop="{{true}}"
+          ></lottie>
+        </div>
+      </stack>
+      <div class="title" @click="changeProcess">
+        <image src="../assets/images/switch.png"></image>
       </div>
-      <!-- <finish class="finish-wrapper" if="{{showDistribute('FINISH')}}"> </finish> -->
     </stack>
 
     <!--显示完成区域-->
@@ -64,10 +81,11 @@ export default {
     circleAngle: Math.PI * 180,
     time: 180,
     percentageBy100: 0,
-    showStatus: 1,
+    showStatus: 2,
     currentDay: '',
     clickable: false,
-    calendarArray: []
+    calendarArray: [],
+    showDone: false,
   },
   computed: {
     currentTime() {
@@ -101,7 +119,7 @@ export default {
       if (success && data) {
         console.log(`走了本地有缓存`)
         //判断是不是同月
-        this.calendarArray = JSON.parse(data)
+        this.calendarArray = JSON.parse(data).array
         console.log(this.calendarArray)
       }
       //本地没有缓存
@@ -117,14 +135,20 @@ export default {
   },
   //点击开始计时
   async handleClickToStarted() {
-    setTimeout(async () => {
-      self.percentage = 100
-      await this.getWidth(this.$element('canvas-id'))
-      const canvas = this.$element('canvas-id')
-      this.ctx = await this.adaptCanvas(canvas.getContext('2d'))
-      await this.draw(this.ctx)
-      this.startTime(this.ctx)
-    }, 500)
+    if (this.clickable) {
+
+    }
+    else {
+      setTimeout(async () => {
+        self.percentage = 0
+        await this.getWidth(this.$element('canvas-id'))
+        const canvas = this.$element('canvas-id')
+        this.ctx = await this.adaptCanvas(canvas.getContext('2d'))
+        await this.draw(this.ctx)
+        this.startTime(this.ctx)
+      }, 500)
+    }
+
   },
   getWidth(dom) {
     const self = this
@@ -181,7 +205,7 @@ export default {
             const startAngle = 3 / 2 * Math.PI
             const percentage = self.percentage
             self.percentage = percentage + 0.55555
-            this.time = this.time = 0 ? 0 : this.time - 1
+            this.time = this.time === 0 ? 0 : this.time - 1
             if (this.percentage > this.percentageBy100) {
               const remainder = Math.floor(this.percentage / 1)
               if (remainder > this.percentageBy100) {
@@ -211,14 +235,15 @@ export default {
             self.time = 180
             self.circleAngle = Math.PI * 180
             self.percentageBy100 = 0
-            if (this.ctx) {
-              this.ctx.clearRect(0, 0, 50, 50)
+            if (this.ctx.clearRect) {
+              this.ctx.clearRect(this.windowWidth / 2 / this.ratio, this.windowHeight / 2 / this.ratio, 50, 50)
             }
             await calendarStorage(JSON.stringify({
-              date:'',
-              array:this.calendarArray
+              date: '',
+              array: this.calendarArray
             }))
-            this.showStatus = CARD_STATUS['READY']
+            this.showDone = true
+            // this.showStatus = CARD_STATUS['READY']
           }
         }, 1000)
       }
@@ -230,24 +255,49 @@ export default {
       console.log(e)
     }
   },
-
   handleclickStop() {
     this.clickable = false
     this.percentageBy100 = 0
     this.percentage = 0
     this.time = 180
     this.circleAngle = Math.PI * 180
-    if (this.ctx) {
-      this.ctx.clearRect(0, 0, 50, 50)
+    if (this.ctx.clearRect) {
+      this.ctx.clearRect(this.windowWidth / 2 / this.ratio, this.windowHeight / 2 / this.ratio, 50, 50)
     }
     clearInterval(this.timeout)
+    this.showStatus = CARD_STATUS['READY']
   },
   showDistribute(status) {
     return CARD_STATUS[status] === this.showStatus
   },
+  process(process) {
+    this.showStatus = process
+  },
   //进行步骤
-  ToProcess(process) {
-    this.showStatus = CARD_STATUS[process]
+  changeProcess() {
+    if (this.showStatus === 1) {
+      setTimeout(() => {
+        this.process(2)
+      }, 500)
+    }
+    if (this.showStatus === 2) {
+      this.clickable = false
+      this.percentageBy100 = 0
+      this.percentage = 0
+      this.time = 180
+      this.circleAngle = Math.PI * 180
+      if (this.ctx.clearRect) {
+        this.ctx.clearRect(this.windowWidth / 2 / this.ratio, this.windowHeight / 2 / this.ratio, 50, 50)
+      }
+      clearInterval(this.timeout)
+      this.showStatus = CARD_STATUS['READY']
+      setTimeout(() => {
+        this.process(1)
+      }, 500)
+    }
+  },
+  showDoneClick() {
+    this.showDone = false
   }
 }
 </script>
@@ -258,7 +308,7 @@ export default {
   height: 100%;
   justify-content: center;
   align-items: center;
-  background-color: #FF9A2E;
+  background-color: #fff7e8;
   padding: 0;
 }
 #canvas-id {
@@ -272,6 +322,7 @@ export default {
   background-color: #5c6b1b;
 }
 .stack {
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -285,9 +336,8 @@ export default {
   width: 100%;
   height: 100%;
   flex: 1;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  padding-top: 20dp;
   padding-bottom: 8dp;
   padding-left: 8dp;
   padding-right: 8dp;
@@ -295,25 +345,29 @@ export default {
     /* width: 80dp; */
     height: 100%;
     flex: 1;
-    stack{
+    stack {
       width: 100%;
       height: 100%;
       justify-content: center;
       align-items: center;
     }
-    image{
+    image {
       width: 80dp;
       height: 80dp;
     }
     text {
       font-size: 16dp;
-      color: #fff
+      color: #fff;
     }
   }
   .calendar-area {
+    margin-top: 36dp;
+    padding: 10dp;
+    flex: 1;
     height: 80%;
-    width: 160dp;
-    margin-right: 10dp;
+    width: 100%;
+    background-color: #ff9a2e;
+    border-radius: 12dp;
   }
 }
 .button-wrap {
@@ -343,8 +397,10 @@ export default {
     background-color: #f6cb9c;
     padding: 6dp 10dp;
     margin-left: 40dp;
+    margin-right: 40dp;
     justify-content: center;
     align-items: center;
+    height: 100dp;
     text {
       font-size: 25dp;
       font-weight: bold;
@@ -363,7 +419,35 @@ export default {
 .outter-wrapper {
   width: 100%;
   height: 100%;
-  flex: 1;
-  flex-direction: row;
+  .title {
+    width: 100%;
+    height: 36dp;
+    justify-content: flex-end;
+    align-items: center;
+    padding-left: 8dp;
+    padding-right: 8dp;
+    image {
+      width: 20dp;
+      object-fit: contain;
+      height: 20dp;
+    }
+  }
+}
+.stack-wrapper {
+  overflow: hidden;
+  .lottie {
+    height: 100%;
+  }
+  .done {
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    justify-content: flex-end;
+    background-color: #fff;
+    .lottie {
+      width: 100%;
+      height: 100%;
+    }
+  }
 }
 </style>

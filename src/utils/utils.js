@@ -123,7 +123,7 @@ class calendar {
         ]
         let NLDateStr = date.toLocaleDateString("ja-JP-u-ca-chinese")
         // console.log(NLDateStr);
-        let dateArr = NLDateStr.split(" ");
+        let dateArr = NLDateStr.split("-");
         let MStr = dateArr[1]
         let DStr = dateArr[2]
         // console.log(MStr.indexOf('閏'));
