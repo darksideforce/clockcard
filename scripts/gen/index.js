@@ -19,7 +19,7 @@ const resolve = dir => {
 }
 
 const successExecPrint = msg => {
-  console.log(
+  console.info(
     colors.green(`✓ `) +
       colors.cyan(`${msg} `) +
       colors.green('task has been successfully executed.')

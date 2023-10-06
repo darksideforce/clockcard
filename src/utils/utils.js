@@ -1,7 +1,6 @@
 import {getDayMonthYear,getFirstDayOfMonth,chunkArr} from './index'
 class calendar {
     constructor(date) {
-
         this.currentDay = undefined
         this.currentYear = undefined
         this.currentMonth = undefined
@@ -70,7 +69,7 @@ class calendar {
             dayobject.matters = [];
             this.days.push(dayobject);
         }
-        console.log(this);
+        console.info(this);
     }
     //获取农历
     formatDateNL(date) {
@@ -122,11 +121,11 @@ class calendar {
             "十二",
         ]
         let NLDateStr = date.toLocaleDateString("ja-JP-u-ca-chinese")
-        // console.log(NLDateStr);
-        let dateArr = NLDateStr.split("-");
+        // console.info(NLDateStr);
+        let dateArr = NLDateStr.split(" ");
         let MStr = dateArr[1]
         let DStr = dateArr[2]
-        // console.log(MStr.indexOf('閏'));
+        // console.info(MStr.indexOf('閏'));
         let r = undefined
         if (MStr.indexOf('閏') != -1) {
             r = MStr.slice(1)
@@ -161,11 +160,11 @@ class initCalendar {
         let nowDate = getDayMonthYear(new Date())
         const {firIndex,secIndex}=this.findIndex(nowDate)
         if(firIndex && secIndex){
-            console.log(`找到了对应的下标`)
+            console.info(`找到了对应的下标`)
             this.array[firIndex][secIndex].count ++
         }
         else{
-            console.log('没有找到对应的下标')
+            console.info('没有找到对应的下标')
         }
     }
     findIndex(daystr) {

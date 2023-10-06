@@ -13,14 +13,14 @@ function getDayMonthYear(date) { //创建日期对象
 }
 function addCount(array,day){
     let newArray = array.flat()
-    console.log('扁平化')
-    console.log(newArray)
+    console.info('扁平化')
+    console.info(newArray)
     const index = newArray.findIndex((e)=>{
         return e.dayStr === day
     })
-    console.log(`count=${newArray[index].count}`)
+    console.info(`count=${newArray[index].count}`)
     newArray[index].count += 1
-    console.log(`找到了，index为${index}`)
+    console.info(`找到了，index为${index}`)
     return chunkArr(newArray,7)
 
 }

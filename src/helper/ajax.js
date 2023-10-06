@@ -36,11 +36,11 @@ function fetchPromise(params) {
         content.success ? resolve(content.value) : resolve(content.message)
       })
       .catch((error, code) => {
-        console.log(`🐛 request fail, code = ${code}`)
+        console.info(`🐛 request fail, code = ${code}`)
         reject(error)
       })
       .finally(() => {
-        console.log(`✔️ request @${params.url} has been completed.`)
+        console.info(`✔️ request @${params.url} has been completed.`)
         resolve()
       })
   })
@@ -61,7 +61,7 @@ function requestHandle(params, timeout = TIMEOUT) {
       })
     ])
   } catch (error) {
-    console.log(error)
+    console.info(error)
   }
 }
 

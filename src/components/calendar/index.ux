@@ -46,7 +46,6 @@ export default {
   data: {
   },
   computedStyle(count, day) {
-    console.log(`count=${count}`)
     let styles = {}
     if (count > 5) {
       styles.backgroundColor = '#004D1C'
@@ -54,7 +53,7 @@ export default {
     else if (count < 5) {
       switch (count) {
         case 1:
-          //  console.log(`123`)
+          //  console.info(`123`)
           styles.backgroundColor = '#AFF0B5';
           break;
         case 2:
@@ -95,8 +94,10 @@ export default {
   .left-wrapper {
     flex-direction: column;
     align-items: center;
-    margin-right: 6dp;
-    padding-top: 20dp;
+    justify-content: center;
+  padding-left: 4dp;
+  padding-right: 4dp;
+  height: 100%;
     text {
       margin-bottom: 4dp;
       font-size: 15dp;
@@ -145,8 +146,8 @@ export default {
       justify-content: center;
       align-items: center;
       .time-box {
-        width: 14dp;
-        height: 14dp;
+        width: 12dp;
+        height: 12dp;
         /* border: 1px solid rgba(0, 0, 0, 0.5); */
         border-radius: 4dp;
         background-color: #ebedf0;

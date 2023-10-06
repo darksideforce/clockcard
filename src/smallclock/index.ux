@@ -48,6 +48,7 @@
         </div>
       </stack>
       <div class="title" @click="changeProcess">
+        <image src="../assets/images/tomatos-logo.png"></image>
         <image src="../assets/images/switch.png"></image>
       </div>
     </stack>
@@ -59,6 +60,8 @@
 <script>
 import utils from '../helper/utils.js'
 import initCalendar from '../utils/utils.js'
+import LOG from '../utils/log.js'
+import manifest from '../manifest.json'
 import { getDayMonthYear, addCount } from '../utils/index.js'
 import { calendarStorage, calendarGet } from '../utils/storage.js'
 const CARD_STATUS = {
@@ -81,9 +84,9 @@ export default {
     circleAngle: Math.PI * 180,
     time: 180,
     percentageBy100: 0,
-    showStatus: 2,
+    showStatus: 1,
     currentDay: '',
-    clickable: false,
+    clickable: true,
     calendarArray: [],
     showDone: false,
   },
@@ -99,6 +102,7 @@ export default {
     },
   },
   onInit() {
+    LOG(`versioncode = ${manifest.versionCode}`)
     this.timeArrayOninit()
   },
   async onShow() {
@@ -106,7 +110,7 @@ export default {
       this.currentDay = getDayMonthYear(new Date())
     }
     catch (e) {
-      console.log(e)
+      LOG(e,true)
     }
   },
   //数组开始初次渲染。判断本地有无缓存对象。如果没有则新创建对象。如果有则判断和当前是否同一个月
@@ -117,35 +121,44 @@ export default {
       const { data, success, error } = await calendarGet()
       //本地有缓存
       if (success && data) {
-        console.log(`走了本地有缓存`)
+        LOG(`走了本地有缓存`)
         //判断是不是同月
         this.calendarArray = JSON.parse(data).array
-        console.log(this.calendarArray)
+        LOG(this.calendarArray)
       }
       //本地没有缓存
       else {
-        console.log(`走了本地没缓存`)
+        LOG(`走了本地没缓存`)
         this.calendarArray = new initCalendar().array
-        console.log(this.calendarArray)
+        LOG(this.calendarArray)
       }
     }
     catch (e) {
-      console.log(e)
+      LOG(e,true)
     }
   },
   //点击开始计时
   async handleClickToStarted() {
-    if (this.clickable) {
-
+    const self = this
+    if (!this.clickable) {
+      LOG(`为false，不重复触发`)
     }
     else {
+      this.clickable = false
+      LOG(`进入计时操作`)
       setTimeout(async () => {
         self.percentage = 0
+        LOG(`操作开始1`)
         await this.getWidth(this.$element('canvas-id'))
+        LOG(`操作开始2`)
         const canvas = this.$element('canvas-id')
+        LOG(`操作开始3`)
         this.ctx = await this.adaptCanvas(canvas.getContext('2d'))
+        LOG(`操作开始4`)
         await this.draw(this.ctx)
+        LOG(`操作开始5`)
         this.startTime(this.ctx)
+        LOG(`操作开始6`)
       }, 500)
     }
 
@@ -155,7 +168,7 @@ export default {
     return new Promise((resolve, reject) => {
       dom.getBoundingClientRect({
         success: function (data) {
-          console.log(JSON.stringify(data))
+          console.info(JSON.stringify(data))
           const { top, bottom, left, right, width, height } = data
           self.windowWidth = width
           self.windowHeight = height
@@ -165,7 +178,7 @@ export default {
           reject()
         },
         complete: function () {
-          console.log('complete')
+          console.info('complete')
         }
 
       })
@@ -175,7 +188,7 @@ export default {
     const device = await utils.getDevice()
     context.ratio = device.screenDensity
     this.ratio = device.screenDensity
-    console.log(this.ratio)
+    console.info(this.ratio)
     return context
   },
   async draw(ctx) {
@@ -191,17 +204,16 @@ export default {
       ctx.save()
     }
     catch (e) {
-      console.log(e)
+      console.info(e)
     }
   },
   startTime(ctx) {
     try {
-      if (!this.clickable) {
-        this.clickable = true
         const self = this
         this.timeout = setInterval(async () => {
-          console.log(`执行绘画`)
+          LOG(`执行绘画,percentage=${self.percentage}`)
           if (self.percentage <= 100) {
+            LOG(`小于百分比`)
             const startAngle = 3 / 2 * Math.PI
             const percentage = self.percentage
             self.percentage = percentage + 0.55555
@@ -219,15 +231,16 @@ export default {
                 ctx.strokeStyle = '#cce451'
                 ctx.stroke()
                 // ctx.beginPath()
-                // console.log(ctx)
+                // console.info(ctx)
               }
               else { }
             }
-
           }
           else {
             //执行次数+1
+            LOG(`执行完毕`)
             clearInterval(this.timeout)
+            this.clickable = true
             this.timeout = null
             this.currentDay = getDayMonthYear(new Date())
             this.calendarArray = addCount(this.calendarArray, this.currentDay)
@@ -236,8 +249,7 @@ export default {
             self.circleAngle = Math.PI * 180
             self.percentageBy100 = 0
             if (this.ctx.clearRect) {
-              this.ctx.clearRect(this.windowWidth / 2 / this.ratio, this.windowHeight / 2 / this.ratio, 50, 50)
-            }
+              this.ctx.clearRect(0, 0, 500, 500)            }
             await calendarStorage(JSON.stringify({
               date: '',
               array: this.calendarArray
@@ -247,16 +259,12 @@ export default {
           }
         }, 1000)
       }
-      else {
-
-      }
-    }
     catch (e) {
-      console.log(e)
+      console.info(e)
     }
   },
   handleclickStop() {
-    this.clickable = false
+    this.clickable = true
     this.percentageBy100 = 0
     this.percentage = 0
     this.time = 180
@@ -281,13 +289,13 @@ export default {
       }, 500)
     }
     if (this.showStatus === 2) {
-      this.clickable = false
+      this.clickable = true
       this.percentageBy100 = 0
       this.percentage = 0
       this.time = 180
       this.circleAngle = Math.PI * 180
       if (this.ctx.clearRect) {
-        this.ctx.clearRect(this.windowWidth / 2 / this.ratio, this.windowHeight / 2 / this.ratio, 50, 50)
+        this.ctx.clearRect(0, 0, 500, 500)
       }
       clearInterval(this.timeout)
       this.showStatus = CARD_STATUS['READY']
@@ -422,20 +430,21 @@ export default {
   .title {
     width: 100%;
     height: 36dp;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
     padding-left: 8dp;
     padding-right: 8dp;
     image {
-      width: 20dp;
+      width: 16dp;
       object-fit: contain;
-      height: 20dp;
+      height: 16dp;
     }
   }
 }
 .stack-wrapper {
   overflow: hidden;
   .lottie {
+    width: 100%;
     height: 100%;
   }
   .done {
